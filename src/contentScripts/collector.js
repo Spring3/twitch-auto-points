@@ -1,4 +1,5 @@
-const ONE_MINUTE_MS = 60 * 1000;
+// 14 minutes 58 seconds in ms
+const ALMOST_FIFTEEN_MINUTES_MS = 15 * 60 * 1000 - 2000;
 
 let intervalId;
 
@@ -8,15 +9,16 @@ function startInterval() {
     console.log('Found the following:', bonusIcon);
     if (bonusIcon) {
       bonusIcon.click();
+      pauseInterval();
     }
   }, 1000);
 }
 
-function pauseInterval(durationMS) {
+function pauseInterval() {
   clearInterval(intervalId);
   setTimeout(() => {
     startInterval();
-  }, ONE_MINUTE_MS);
+  }, ALMOST_FIFTEEN_MINUTES_MS);
 }
 
 startInterval();
