@@ -1,6 +1,6 @@
 module.exports = {
   verbose: true,
-  sourceDir: 'src/',
+  sourceDir: 'dist/',
   build: {
     overwriteDest: true
   }

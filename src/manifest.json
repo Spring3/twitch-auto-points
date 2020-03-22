@@ -7,27 +7,16 @@
   "description": "Automatic twitch channel points collection",
   "permissions": [
     "activeTab"
-  ], 
+  ],
   "content_scripts": [{
     "js": [
-      "browser-polyfill.js",
+      "browser-polyfill.min.js",
       "contentScripts/collector.js"
     ],
-    "matches": ["https://www.twitch.tv/*/*"],
-    "match_about_blank": false    
+    "matches": ["https://www.twitch.tv/*"],
+    "match_about_blank": false,
+    "run_at": "document_end"
   }],
-  "browser_action": {
-    "default_icon": "icons/icon.svg",
-    "theme_icons": [
-      {
-        "light": "icons/icon.svg",
-        "dark": "icons/icon.svg",
-        "size": 32
-      }
-    ],
-    "default_title": "Twitch Auto Points",
-    "default_popup": "popup/index.html"
-  },
   "page_action": {
     "default_icon": "icons/icon.svg"
   },
