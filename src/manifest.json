@@ -1,0 +1,40 @@
+{
+  "manifest_version": 2,
+  "author": "Daniyil Vasylenko",
+  "name": "Twitch Auto Points",
+  "version": "1.0.0",
+  "homepage_url": "https://github.com/Spring3/twitch-auto-points",
+  "description": "Automatic twitch channel points collection",
+  "permissions": [
+    "activeTab"
+  ], 
+  "content_scripts": [{
+    "js": [
+      "browser-polyfill.js",
+      "contentScripts/collector.js"
+    ],
+    "matches": ["https://www.twitch.tv/*/*"],
+    "match_about_blank": false    
+  }],
+  "browser_action": {
+    "default_icon": "icons/icon.svg",
+    "theme_icons": [
+      {
+        "light": "icons/icon.svg",
+        "dark": "icons/icon.svg",
+        "size": 32
+      }
+    ],
+    "default_title": "Twitch Auto Points",
+    "default_popup": "popup/index.html"
+  },
+  "page_action": {
+    "default_icon": "icons/icon.svg"
+  },
+  "icons": {
+    "16": "icons/icon.svg",
+    "32": "icons/icon.svg",
+    "48": "icons/icon.svg",
+    "128": "icons/icon.svg"
+  }
+}

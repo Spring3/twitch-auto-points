@@ -1,0 +1,27 @@
+{
+  "name": "twitch-auto-points",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "web-ext run",
+    "firefox": "web-ext run",
+    "lint": "web-ext lint",
+    "package": "npm run lint && web-ext build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Spring3/twitch-auto-points.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Spring3/twitch-auto-points/issues"
+  },
+  "homepage": "https://github.com/Spring3/twitch-auto-points#readme",
+  "devDependencies": {
+    "web-ext": "^4.1.0",
+    "webextension-polyfill": "^0.6.0"
+  }
+}
