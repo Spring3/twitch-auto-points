@@ -19,23 +19,14 @@
   },
   "browser_action": {
     "default_icon": {
-      "16": "icons/icon.svg",
-      "32": "icons/icon.svg",
-      "48": "icons/icon.svg",
-      "64": "icons/icon.svg",
-      "96": "icons/icon.svg",
-      "128": "icons/icon.svg",
-      "256": "icons/icon.svg"
-    },
-    "theme_icons": [{
-      "dark": "icons/icon-light.svg",
-      "light": "icons/icon.svg",
-      "size": 32
-    }, {
-      "dark": "icons/icon-light.svg",
-      "light": "icons/icon.svg",
-      "size": 16
-    }]
+      "16": "icons/icon-color.svg",
+      "32": "icons/icon-color.svg",
+      "48": "icons/icon-color.svg",
+      "64": "icons/icon-color.svg",
+      "96": "icons/icon-color.svg",
+      "128": "icons/icon-color.svg",
+      "256": "icons/icon-color.svg"
+    }
   },
   "content_scripts": [{
     "js": [

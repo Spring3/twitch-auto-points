@@ -6,7 +6,6 @@
   "scripts": {
     "start": "npm run firefox",
     "build": "webpack",
-    "dev": "npm run build -- --watch & web-ext run",
     "firefox": "npm run build && web-ext run",
     "lint": "web-ext lint --source-dir src",
     "package": "npm run build && web-ext build"
