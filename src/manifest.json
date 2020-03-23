@@ -15,7 +15,7 @@
     ],
     "matches": ["https://www.twitch.tv/*"],
     "match_about_blank": false,
-    "run_at": "document_end"
+    "run_at": "document_idle"
   }],
   "page_action": {
     "default_icon": "icons/icon.svg"
