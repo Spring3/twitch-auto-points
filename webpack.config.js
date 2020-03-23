@@ -31,6 +31,11 @@ module.exports = {
       },
       {
         context: '../',
+        from: 'src/icons',
+        to: 'icons/'
+      },
+      {
+        context: '../',
         from: 'src/popup/index.html',
         to: 'popup/index.html'
       },

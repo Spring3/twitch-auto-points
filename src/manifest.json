@@ -18,12 +18,21 @@
     "run_at": "document_idle"
   }],
   "page_action": {
-    "default_icon": "icons/icon.svg"
+    "default_icon": "icons/icon-128.svg"
   },
   "icons": {
-    "16": "icons/icon.svg",
-    "32": "icons/icon.svg",
-    "48": "icons/icon.svg",
-    "128": "icons/icon.svg"
+    "16": "icons/icon-default.svg",
+    "32": "icons/icon-default.svg",
+    "48": "icons/icon-default.svg",
+    "64": "icons/icon-default.svg",
+    "96": "icons/icon-default.svg",
+    "128": "icons/icon-default.svg",
+    "256": "icons/icon-default.svg"
+  },
+  "theme": {
+    "colors": {
+      "button_background_active": "#00e6cb",
+      "button_background_hover": "#00ad96"
+    }
   }
 }
