@@ -6,7 +6,7 @@ module.exports = {
   mode: 'production',
   entry: {
     'contentScripts/worker': './contentScripts/worker.js',
-    'popup/index': './popup/index.js'
+    'background/browserAction': './background/browserAction.js'
   },
   output: {
     path: path.join(__dirname, 'dist'),
@@ -33,11 +33,6 @@ module.exports = {
         context: '../',
         from: 'src/icons',
         to: 'icons/'
-      },
-      {
-        context: '../',
-        from: 'src/popup/index.html',
-        to: 'popup/index.html'
       },
       {
         context: '../',
