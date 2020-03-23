@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0beta2 (2b71d25, 2019-12-03)"
+   sodipodi:docname="icon-disabled-light.svg"
+   class="tw-icon__svg"
+   width="128"
+   height="128"
+   version="1.1"
+   viewBox="0 0 128 128"
+   x="0px"
+   y="0px"
+   fill="#000"
+   id="svg837">
+  <sodipodi:namedview
+     inkscape:current-layer="svg837"
+     inkscape:window-maximized="0"
+     inkscape:window-y="0"
+     inkscape:window-x="0"
+     inkscape:cy="62.886293"
+     inkscape:cx="63.392445"
+     inkscape:zoom="4.9246575"
+     showgrid="false"
+     id="namedview838"
+     inkscape:window-height="878"
+     inkscape:window-width="1336"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     inkscape:document-rotation="0"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <metadata
+     id="metadata843">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs841" />
+  <g
+     style="fill:#ffffff"
+     id="g835"
+     transform="matrix(6.875,0,0,6.875,-4.75,-4.75)">
+    <path
+       style="fill:#ffffff"
+       inkscape:connector-curvature="0"
+       fill-rule="evenodd"
+       d="M 16.503,3.257 18,7 V 18 H 2 V 7 L 3.497,3.257 A 2,2 0 0 1 5.354,2 h 9.292 a 2,2 0 0 1 1.857,1.257 z M 5.354,4 h 9.292 l 1.2,3 H 4.154 Z M 4,9 v 7 H 16 V 9 h -3 v 4 H 7 V 9 Z m 7,0 v 2 H 9 V 9 Z"
+       clip-rule="evenodd"
+       id="path833" />
+  </g>
+</svg>
