@@ -5,7 +5,7 @@ module.exports = {
   context: path.resolve(__dirname, './src'),
   mode: 'production',
   entry: {
-    'contentScripts/collector': './contentScripts/collector.js',
+    'contentScripts/worker': './contentScripts/worker.js',
     'popup/index': './popup/index.js'
   },
   output: {

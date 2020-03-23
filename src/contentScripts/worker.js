@@ -1,6 +1,8 @@
 // 14 minutes 58 seconds in ms
 const ALMOST_FIFTEEN_MINUTES_MS = 15 * 60 * 1000 - 2000;
+const ONE_MINUTE_MS = 60 * 1000;
 
+const maxClickAttempts = 30;
 let intervalId;
 
 function isLive() {
@@ -10,27 +12,43 @@ function isLive() {
 function attemptToClick() {
   const bonusIcon = document.querySelector('.claimable-bonus__icon');
   if (bonusIcon) {
-    console.log('Found a button');
     bonusIcon.click();
     return true;
   }
   return false;
 }
 
-function startInterval() {
+function waitForBonusButton() {
+  let clickAttempts = 0;
   intervalId = setInterval(() => {
     const clicked = attemptToClick();
     if (clicked) {
-      pauseForFifteenMinutes();
+      pauseFor(ALMOST_FIFTEEN_MINUTES_MS);
+    }
+    
+    clickAttempts ++;
+    
+    if (!clicked && clickAttempts > maxClickAttempts) {
+      pauseFor(ONE_MINUTE_MS);
     }
   }, 1000);
 }
 
-function pauseForFifteenMinutes() {
+function pauseFor(duration) {
   clearInterval(intervalId);
   setTimeout(() => {
-    startInterval();
-  }, ALMOST_FIFTEEN_MINUTES_MS);
+    waitForBonusButton();
+  }, duration);
+}
+
+function waitForWhenLive() {
+  // reusing the same interval
+  interval = setInterval(() => {
+    if (isLive()) {
+      clearInterval(interval);
+      waitForBonusButton();
+    }
+  }, ONE_MINUTE_MS);
 }
 
 
@@ -38,10 +56,7 @@ function pauseForFifteenMinutes() {
 attemptToClick();
 
 if (isLive()) {
-  console.log('Live');
-  startInterval();
+  waitForBonusButton();
 } else {
-
+  waitForWhenLive();
 }
-
-console.log('Loaded content script');

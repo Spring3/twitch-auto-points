@@ -11,7 +11,7 @@
   "content_scripts": [{
     "js": [
       "browser-polyfill.min.js",
-      "contentScripts/collector.js"
+      "contentScripts/worker.js"
     ],
     "matches": ["https://www.twitch.tv/*"],
     "match_about_blank": false,
