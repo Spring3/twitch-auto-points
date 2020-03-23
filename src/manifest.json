@@ -8,6 +8,18 @@
   "permissions": [
     "activeTab"
   ],
+  "content_security_policy": "script-src 'self' https://wwww.twitch.com; object-src 'self'",
+  "browser_action": {
+    "default_icon": {
+      "16": "icons/icon.svg",
+      "32": "icons/icon.svg",
+      "48": "icons/icon.svg",
+      "64": "icons/icon.svg",
+      "96": "icons/icon.svg",
+      "128": "icons/icon.svg",
+      "256": "icons/icon.svg"
+    }
+  },
   "content_scripts": [{
     "js": [
       "browser-polyfill.min.js",
@@ -17,22 +29,13 @@
     "match_about_blank": false,
     "run_at": "document_idle"
   }],
-  "page_action": {
-    "default_icon": "icons/icon-128.svg"
-  },
   "icons": {
-    "16": "icons/icon-default.svg",
-    "32": "icons/icon-default.svg",
-    "48": "icons/icon-default.svg",
-    "64": "icons/icon-default.svg",
-    "96": "icons/icon-default.svg",
-    "128": "icons/icon-default.svg",
-    "256": "icons/icon-default.svg"
-  },
-  "theme": {
-    "colors": {
-      "button_background_active": "#00e6cb",
-      "button_background_hover": "#00ad96"
-    }
+    "16": "icons/icon.svg",
+    "32": "icons/icon.svg",
+    "48": "icons/icon.svg",
+    "64": "icons/icon.svg",
+    "96": "icons/icon.svg",
+    "128": "icons/icon.svg",
+    "256": "icons/icon.svg"
   }
 }
