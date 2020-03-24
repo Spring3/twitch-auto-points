@@ -1,8 +1,9 @@
 // 14 minutes 58 seconds in ms
 const ALMOST_FIFTEEN_MINUTES_MS = 15 * 60 * 1000 - 2000;
 const ONE_MINUTE_MS = 60 * 1000;
+const FIVE_SECONDS = 5 * 1000;
 
-const maxClickAttempts = 30;
+const maxClickAttempts = 5;
 let intervalId;
 
 function isLive() {
@@ -29,7 +30,7 @@ function waitForBonusButton() {
     clickAttempts ++;
     
     if (!clicked && clickAttempts > maxClickAttempts) {
-      pauseFor(ONE_MINUTE_MS);
+      pauseFor(FIVE_SECONDS);
     }
   }, 1000);
 }
