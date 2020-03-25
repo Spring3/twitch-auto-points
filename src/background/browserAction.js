@@ -18,19 +18,57 @@ const iconsDisabled = {
   256: "icons/icon-256.png"
 }
 
-browser.storage.local.get().then(async (currentState) => {
-  if (!currentState.isEnabled) {
+
+let isEnabled = true;
+
+browser.storage.local.get().then((currentState) => {
+  isEnabled = !!currentState.isEnabled;
+  if (!isEnabled) {
     browser.browserAction.setIcon({ path: iconsDisabled });
   }
 });
 
-browser.browserAction.onClicked.addListener(async () => {
-  const state = await browser.storage.local.get();
-  const isEnabled = !state.isEnabled;
-  if (isEnabled) {
-    browser.browserAction.setIcon({ path: iconsEnabled });
-  } else {
-    browser.browserAction.setIcon({ path: iconsDisabled });
+browser.browserAction.onClicked.addListener(() => {
+  browser.storage.local.set({ isEnabled: !isEnabled });
+});
+
+function broadcastUpdate(isEnabled) {
+  browser.tabs.query({ url: 'https://www.twitch.tv/*' })
+    .then((tabs) => {
+      console.log('tabs', tabs);
+      for (let i = 0; i < tabs.length; i++) {
+        const tab = tabs[i];
+        emitStatus(tab.id, isEnabled);
+      }
+    });
+}
+
+function emitStatus(tabId, isEnabled) {
+  browser.tabs.sendMessage(tabId, { isEnabled });
+}
+
+browser.storage.onChanged.addListener((changes, areaName) => {
+  console.log('changed', changes);
+  if (areaName === 'local' && changes.isEnabled && changes.isEnabled.newValue !== undefined) {
+    isEnabled = changes.isEnabled.newValue;
+    if (isEnabled) {
+      browser.browserAction.setIcon({ path: iconsEnabled });
+    } else {
+      browser.browserAction.setIcon({ path: iconsDisabled });
+    }
+    broadcastUpdate(isEnabled);
   }
-  return browser.storage.local.set({ isEnabled });
+});
+
+const pendingTabs = {};
+
+browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'loading' && /https:\/\/www.twitch.tv\/*/.test(changeInfo.url)) {
+    console.log('loading', tab.url);
+    pendingTabs[tabId] = true;
+  } else if (changeInfo.status === 'complete' && pendingTabs[tabId]) {
+    emitStatus(tabId, isEnabled);
+  }
+}, {
+  properties: ['status']
 });

@@ -7,9 +7,10 @@
   "description": "Automatic twitch channel points collection",
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "tabs"
   ],
-  "content_security_policy": "script-src 'self' https://wwww.twitch.com; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://wwww.twitch.tv; object-src 'self'",
   "background": {
     "scripts": [
       "browser-polyfill.min.js",
