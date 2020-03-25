@@ -12,23 +12,18 @@ function isLive() {
 }
 
 function attemptToClick() {
-  console.log('Trying to click');
   const bonusIcon = document.getElementsByClassName('claimable-bonus__icon')[0];
   if (bonusIcon) {
     bonusIcon.click();
-    console.log('clicked');
     return true;
   }
-  console.log('not clicked');
   return false;
 }
 
 function waitForBonusButton() {
-  console.log('searching for button');
   let clickAttempts = 0;
   intervalId = setInterval(() => {
     const clicked = attemptToClick();
-    console.log('clicked', clicked);
     if (clicked) {
       pauseFor(ALMOST_FIFTEEN_MINUTES_MS);
     }
@@ -42,7 +37,6 @@ function waitForBonusButton() {
 }
 
 function pauseFor(duration) {
-  console.log('pausing for', duration);
   clearInterval(intervalId);
   setTimeout(() => {
     if (isLive()) {
@@ -54,16 +48,12 @@ function pauseFor(duration) {
 }
 
 function waitForWhenLive() {
-  console.log('waiting for when live');
   clearInterval(intervalId);
   // reusing the same interval
   intervalId = setInterval(() => {
     if (isLive()) {
-      console.log('isLive');
       clearInterval(intervalId);
       waitForBonusButton();
-    } else {
-      console.log('not live');
     }
   }, TEN_SECONDS_MS);
 }
@@ -74,7 +64,6 @@ function initialize() {
     clearInterval(intervalId);
   }
 
-  console.log('Initialized');
   // initial check for the button
   attemptToClick();
 
@@ -86,9 +75,7 @@ function initialize() {
 }
 
 const onMessage = (message, sender) => {
-  console.log('message', message);
   if (sender.id === browser.runtime.id) {
-    console.log('received message', message);
     isEnabled = message.isEnabled;
     if (isEnabled) {
       initialize();
@@ -100,9 +87,3 @@ const onMessage = (message, sender) => {
 
 
 browser.runtime.onMessage.addListener(onMessage);
-
-window.onbeforeunload = function(e) {
-  console.log('before unload');
-  console.log(location.href);
-  browser.runtime.onMessage.removeListener(onMessage);
-};

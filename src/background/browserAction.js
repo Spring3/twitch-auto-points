@@ -36,7 +36,6 @@ browser.browserAction.onClicked.addListener(() => {
 function broadcastUpdate(isEnabled) {
   browser.tabs.query({ url: 'https://www.twitch.tv/*' })
     .then((tabs) => {
-      console.log('tabs', tabs);
       for (let i = 0; i < tabs.length; i++) {
         const tab = tabs[i];
         emitStatus(tab.id, isEnabled);
@@ -57,7 +56,6 @@ function unlockForTab(tabId) {
 }
 
 browser.storage.onChanged.addListener((changes, areaName) => {
-  console.log('changed', changes);
   if (areaName === 'local' && changes.isEnabled && changes.isEnabled.newValue !== undefined) {
     isEnabled = changes.isEnabled.newValue;
     if (isEnabled) {
@@ -72,16 +70,12 @@ browser.storage.onChanged.addListener((changes, areaName) => {
 const redirectedToTwitch = {};
 
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  console.log(redirectedToTwitch);
   if (changeInfo.status === 'loading') {
-    console.log('changeInfo', changeInfo);
     if (twitchUrlRegexp.test(changeInfo.url)) {
       unlockForTab(tabId);
-      console.log('loading', tab.url);
       redirectedToTwitch[tabId] = true;
       // if was on twitch, but is redirecting outside
     } else if (redirectedToTwitch[tabId]) {
-      console.log('bye twitch');
       lockForTab(tabId);
       delete redirectedToTwitch[tabId];
     } else if (!twitchUrlRegexp.test(changeInfo.url)) {
