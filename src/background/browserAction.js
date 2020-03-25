@@ -18,6 +18,8 @@ const iconsDisabled = {
   256: "icons/icon-256.png"
 }
 
+const twitchUrlRegexp = /^https:\/\/www.twitch.tv\/*/;
+
 let isEnabled = true;
 
 browser.storage.local.get().then((currentState) => {
@@ -46,6 +48,16 @@ function emitStatus(tabId, isEnabled) {
   browser.tabs.sendMessage(tabId, { isEnabled });
 }
 
+function lockForTab(tabId) {
+  browser.browserAction.disable(tabId);
+  browser.browserAction.setIcon({ path: iconsDisabled, tabId });
+}
+
+function unlockForTab(tabId) {
+  browser.browserAction.enable(tabId);
+  browser.browserAction.setIcon({ path: iconsEnabled, tabId });
+}
+
 browser.storage.onChanged.addListener((changes, areaName) => {
   console.log('changed', changes);
   if (areaName === 'local' && changes.isEnabled && changes.isEnabled.newValue !== undefined) {
@@ -65,13 +77,17 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   console.log(redirectedToTwitch);
   if (changeInfo.status === 'loading') {
     console.log('changeInfo', changeInfo);
-    if (/^https:\/\/www.twitch.tv\/*/.test(changeInfo.url)) {
+    if (twitchUrlRegexp.test(changeInfo.url)) {
+      unlockForTab(tabId);
       console.log('loading', tab.url);
       redirectedToTwitch[tabId] = true;
       // if was on twitch, but is redirecting outside
     } else if (redirectedToTwitch[tabId]) {
       console.log('bye twitch');
+      lockForTab(tabId);
       delete redirectedToTwitch[tabId];
+    } else if (!twitchUrlRegexp.test(changeInfo.url)) {
+      lockForTab(tabId);
     }
   } else if (changeInfo.status === 'complete' && redirectedToTwitch[tabId]) {
     emitStatus(tabId, isEnabled);
