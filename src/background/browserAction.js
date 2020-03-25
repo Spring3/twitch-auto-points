@@ -18,7 +18,6 @@ const iconsDisabled = {
   256: "icons/icon-256.png"
 }
 
-
 let isEnabled = true;
 
 browser.storage.local.get().then((currentState) => {
@@ -60,15 +59,21 @@ browser.storage.onChanged.addListener((changes, areaName) => {
   }
 });
 
-const pendingTabs = {};
+const redirectedToTwitch = {};
 
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'loading' && /https:\/\/www.twitch.tv\/*/.test(changeInfo.url)) {
-    console.log('loading', tab.url);
-    pendingTabs[tabId] = true;
-  } else if (changeInfo.status === 'complete' && pendingTabs[tabId]) {
+  console.log(redirectedToTwitch);
+  if (changeInfo.status === 'loading') {
+    console.log('changeInfo', changeInfo);
+    if (/^https:\/\/www.twitch.tv\/*/.test(changeInfo.url)) {
+      console.log('loading', tab.url);
+      redirectedToTwitch[tabId] = true;
+      // if was on twitch, but is redirecting outside
+    } else if (redirectedToTwitch[tabId]) {
+      console.log('bye twitch');
+      delete redirectedToTwitch[tabId];
+    }
+  } else if (changeInfo.status === 'complete' && redirectedToTwitch[tabId]) {
     emitStatus(tabId, isEnabled);
   }
-}, {
-  properties: ['status']
-});
+}, { properties: ['status'] });

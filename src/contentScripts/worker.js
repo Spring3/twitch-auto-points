@@ -8,12 +8,12 @@ let isEnabled;
 let intervalId;
 
 function isLive() {
-  return !!document.querySelector('.live-indicator');
+  return !!document.getElementsByClassName('live-indicator')[0];
 }
 
 function attemptToClick() {
   console.log('Trying to click');
-  const bonusIcon = document.querySelector('.claimable-bonus__icon');
+  const bonusIcon = document.getElementsByClassName('claimable-bonus__icon')[0];
   if (bonusIcon) {
     bonusIcon.click();
     console.log('clicked');
@@ -55,11 +55,15 @@ function pauseFor(duration) {
 
 function waitForWhenLive() {
   console.log('waiting for when live');
+  clearInterval(intervalId);
   // reusing the same interval
-  interval = setInterval(() => {
+  intervalId = setInterval(() => {
     if (isLive()) {
-      clearInterval(interval);
+      console.log('isLive');
+      clearInterval(intervalId);
       waitForBonusButton();
+    } else {
+      console.log('not live');
     }
   }, TEN_SECONDS_MS);
 }
@@ -81,10 +85,9 @@ function initialize() {
   }
 }
 
-
-browser.runtime.onMessage.addListener((message, sender) => {
+const onMessage = (message, sender) => {
   console.log('message', message);
-  if (sender.id === browser.runtime.id && message.isEnabled !== isEnabled) {
+  if (sender.id === browser.runtime.id) {
     console.log('received message', message);
     isEnabled = message.isEnabled;
     if (isEnabled) {
@@ -93,4 +96,13 @@ browser.runtime.onMessage.addListener((message, sender) => {
       clearInterval(intervalId);
     }
   }
-});
+}
+
+
+browser.runtime.onMessage.addListener(onMessage);
+
+window.onbeforeunload = function(e) {
+  console.log('before unload');
+  console.log(location.href);
+  browser.runtime.onMessage.removeListener(onMessage);
+};
