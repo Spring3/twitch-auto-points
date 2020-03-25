@@ -23,7 +23,7 @@ const twitchUrlRegexp = /^https:\/\/www.twitch.tv\/*/;
 let isEnabled = true;
 
 browser.storage.local.get().then((currentState) => {
-  isEnabled = !!currentState.isEnabled;
+  isEnabled = typeof currentState.isEnabled === 'boolean' ? currentState.isEnabled : true;
   if (!isEnabled) {
     browser.browserAction.setIcon({ path: iconsDisabled });
   }
@@ -50,12 +50,10 @@ function emitStatus(tabId, isEnabled) {
 
 function lockForTab(tabId) {
   browser.browserAction.disable(tabId);
-  browser.browserAction.setIcon({ path: iconsDisabled, tabId });
 }
 
 function unlockForTab(tabId) {
   browser.browserAction.enable(tabId);
-  browser.browserAction.setIcon({ path: iconsEnabled, tabId });
 }
 
 browser.storage.onChanged.addListener((changes, areaName) => {
