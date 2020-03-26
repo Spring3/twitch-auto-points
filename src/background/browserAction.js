@@ -69,7 +69,7 @@ browser.storage.onChanged.addListener((changes, areaName) => {
 
 const redirectedToTwitch = {};
 
-browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
   if (changeInfo.status === 'loading') {
     if (twitchUrlRegexp.test(changeInfo.url)) {
       unlockForTab(tabId);
@@ -84,4 +84,4 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   } else if (changeInfo.status === 'complete' && redirectedToTwitch[tabId]) {
     emitStatus(tabId, isEnabled);
   }
-}, { properties: ['status'] });
+});
