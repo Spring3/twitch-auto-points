@@ -72,7 +72,7 @@ function waitForWhenLive() {
   // reusing the same interval
   interval.set(() => {
     if (isLive()) {
-      clearInterval(intervalId);
+      interval.clear();
       waitForBonusButton();
     }
   }, FIVE_SECONDS);
