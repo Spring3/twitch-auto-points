@@ -4,7 +4,23 @@ const FIVE_SECONDS = 5 * 1000;
 
 const maxClickAttempts = 5;
 let isEnabled;
-let intervalId;
+let timeout;
+
+const IntervalOperator = () => {
+  let intervalId;
+
+  return {
+    set: (handler, interval) => {
+      clearInterval(intervalId);
+      intervalId = setInterval(handler, interval);
+    },
+    clear: () => {
+      clearInterval(intervalId);
+    }
+  };
+};
+
+const interval = IntervalOperator();
 
 function isLive() {
   return !!document.getElementsByClassName('live-indicator')[0];
@@ -23,7 +39,7 @@ function attemptToClick() {
 function waitForBonusButton() {
   let clickAttempts = 0;
   console.log('looking for button');
-  intervalId = setInterval(() => {
+  interval.set(() => {
     const clicked = attemptToClick();
     console.log('click', clicked);
     if (clicked) {
@@ -40,8 +56,8 @@ function waitForBonusButton() {
 
 function pauseFor(duration) {
   console.log('pausing for', duration);
-  clearInterval(intervalId);
-  setTimeout(() => {
+  interval.clear();
+  timeout = setTimeout(() => {
     if (isLive()) {
       waitForBonusButton();
     } else {
@@ -52,9 +68,9 @@ function pauseFor(duration) {
 
 function waitForWhenLive() {
   console.log('waiting when live');
-  clearInterval(intervalId);
+  interval.clear();
   // reusing the same interval
-  intervalId = setInterval(() => {
+  interval.set(() => {
     if (isLive()) {
       clearInterval(intervalId);
       waitForBonusButton();
@@ -64,13 +80,8 @@ function waitForWhenLive() {
 
 
 function initialize() {
-  console.log('INTERVAL', intervalId);
-  if (intervalId) {
-    console.log('CLEARING');
-    clearInterval(intervalId);
-  }
-
   console.log('initializing');
+  clearTimeout(timeout);
 
   // initial check for the button
   attemptToClick();
@@ -86,10 +97,10 @@ const onMessage = (message, sender) => {
   if (sender.id === browser.runtime.id) {
     isEnabled = message.isEnabled;
     if (isEnabled) {
-      clearInterval(intervalId);
       initialize();
     } else {
-      clearInterval(intervalId);
+      interval.clear();
+      clearTimeout(timeout);
     }
   }
 }
