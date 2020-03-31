@@ -74,18 +74,14 @@ browser.storage.onChanged.addListener((changes, areaName) => {
 
 const redirectedToTwitch = {};
 
+
 console.log('location', window.location.href);
 
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'loading' && changeInfo.url) {
     console.log('changeInfo', changeInfo);
-    if (
-      !redirectedToTwitch[tabId] &&
-      // if redirecting within twitch
-      twitchUrlRegexp.test(changeInfo.url)
-      // // or reloading the twitch page
-      // || !changeInfo.url && twitchUrlRegexp.test(tab.url)
-    ) {
+    // if redirecting within twitch
+    if (!redirectedToTwitch[tabId] && twitchUrlRegexp.test(changeInfo.url)) {
       console.log('valid url', (changeInfo || tab).url);
       unlockForTab(tabId);
       redirectedToTwitch[tabId] = true;
@@ -104,6 +100,12 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     emitStatus(tabId, isEnabled);
   }
 });
+
+browser.tabs.onRemoved.addListener((tabId) => {
+  if (redirectedToTwitch[tabId]) {
+    delete redirectedToTwitch[tabId];
+  }
+})
 
 // browser.runtime.onMessage.addListener((message, sender) => {
 //   console.log('sender', sender);
