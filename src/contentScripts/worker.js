@@ -1,11 +1,26 @@
 // 14 minutes 58 seconds in ms
 const ALMOST_FIFTEEN_MINUTES_MS = 15 * 60 * 1000 - 2000;
-const TEN_SECONDS_MS = 10 * 1000;
 const FIVE_SECONDS = 5 * 1000;
 
 const maxClickAttempts = 5;
 let isEnabled;
-let intervalId;
+let timeout;
+
+const IntervalOperator = () => {
+  let intervalId;
+
+  return {
+    set: (handler, interval) => {
+      clearInterval(intervalId);
+      intervalId = setInterval(handler, interval);
+    },
+    clear: () => {
+      clearInterval(intervalId);
+    }
+  };
+};
+
+const interval = IntervalOperator();
 
 function isLive() {
   return !!document.getElementsByClassName('live-indicator')[0];
@@ -22,7 +37,7 @@ function attemptToClick() {
 
 function waitForBonusButton() {
   let clickAttempts = 0;
-  intervalId = setInterval(() => {
+  interval.set(() => {
     const clicked = attemptToClick();
     if (clicked) {
       pauseFor(ALMOST_FIFTEEN_MINUTES_MS);
@@ -37,8 +52,8 @@ function waitForBonusButton() {
 }
 
 function pauseFor(duration) {
-  clearInterval(intervalId);
-  setTimeout(() => {
+  interval.clear();
+  timeout = setTimeout(() => {
     if (isLive()) {
       waitForBonusButton();
     } else {
@@ -48,21 +63,19 @@ function pauseFor(duration) {
 }
 
 function waitForWhenLive() {
-  clearInterval(intervalId);
+  interval.clear();
   // reusing the same interval
-  intervalId = setInterval(() => {
+  interval.set(() => {
     if (isLive()) {
-      clearInterval(intervalId);
+      interval.clear();
       waitForBonusButton();
     }
-  }, TEN_SECONDS_MS);
+  }, FIVE_SECONDS);
 }
 
 
 function initialize() {
-  if (intervalId) {
-    clearInterval(intervalId);
-  }
+  clearTimeout(timeout);
 
   // initial check for the button
   attemptToClick();
@@ -80,7 +93,8 @@ const onMessage = (message, sender) => {
     if (isEnabled) {
       initialize();
     } else {
-      clearInterval(intervalId);
+      interval.clear();
+      clearTimeout(timeout);
     }
   }
 }

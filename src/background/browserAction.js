@@ -69,19 +69,30 @@ browser.storage.onChanged.addListener((changes, areaName) => {
 
 const redirectedToTwitch = {};
 
-browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
+browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'loading') {
-    if (twitchUrlRegexp.test(changeInfo.url)) {
+    // if redirecting within twitch
+    if (
+      (!redirectedToTwitch[tabId] && changeInfo.url && twitchUrlRegexp.test(changeInfo.url))
+      || (!changeInfo.url && twitchUrlRegexp.test(tab.url))      
+    ) {
       unlockForTab(tabId);
       redirectedToTwitch[tabId] = true;
-      // if was on twitch, but is redirecting outside
-    } else if (redirectedToTwitch[tabId]) {
+    // if was on twitch, but is redirecting outside
+    } else if (redirectedToTwitch[tabId] && changeInfo.url && !twitchUrlRegexp.test(changeInfo.url)) {
       lockForTab(tabId);
       delete redirectedToTwitch[tabId];
-    } else if (!twitchUrlRegexp.test(changeInfo.url)) {
+    // if not twitch
+    } else if (!redirectedToTwitch[tabId] && changeInfo.url && !twitchUrlRegexp.test(changeInfo.url)) {
       lockForTab(tabId);
     }
   } else if (changeInfo.status === 'complete' && redirectedToTwitch[tabId]) {
     emitStatus(tabId, isEnabled);
   }
 });
+
+browser.tabs.onRemoved.addListener((tabId) => {
+  if (redirectedToTwitch[tabId]) {
+    delete redirectedToTwitch[tabId];
+  }
+})
