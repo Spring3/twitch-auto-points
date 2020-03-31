@@ -20,7 +20,7 @@ const iconsDisabled = {
 
 const twitchUrlRegexp = /^https:\/\/www.twitch.tv\/*/;
 
-let isEnabled;
+let isEnabled = true;
 
 browser.storage.local.get().then((currentState) => {
   isEnabled = typeof currentState.isEnabled === 'boolean' ? currentState.isEnabled : true;
@@ -44,11 +44,6 @@ function broadcastUpdate(isEnabled) {
 }
 
 function emitStatus(tabId, isEnabled) {
-  if (isEnabled) {
-    unlockForTab(tabId);
-  } else {
-    lockForTab(tabId);
-  }
   browser.tabs.sendMessage(tabId, { isEnabled });
 }
 
@@ -74,29 +69,24 @@ browser.storage.onChanged.addListener((changes, areaName) => {
 
 const redirectedToTwitch = {};
 
-
-console.log('location', window.location.href);
-
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'loading' && changeInfo.url) {
-    console.log('changeInfo', changeInfo);
+  if (changeInfo.status === 'loading') {
     // if redirecting within twitch
-    if (!redirectedToTwitch[tabId] && twitchUrlRegexp.test(changeInfo.url)) {
-      console.log('valid url', (changeInfo || tab).url);
+    if (
+      (!redirectedToTwitch[tabId] && changeInfo.url && twitchUrlRegexp.test(changeInfo.url))
+      || (!changeInfo.url && twitchUrlRegexp.test(tab.url))      
+    ) {
       unlockForTab(tabId);
       redirectedToTwitch[tabId] = true;
     // if was on twitch, but is redirecting outside
-    } else if (redirectedToTwitch[tabId] && !twitchUrlRegexp.test(changeInfo.url)) {
+    } else if (redirectedToTwitch[tabId] && changeInfo.url && !twitchUrlRegexp.test(changeInfo.url)) {
       lockForTab(tabId);
-      console.log('leaving twitch', changeInfo.url);
       delete redirectedToTwitch[tabId];
     // if not twitch
-    } else if (!redirectedToTwitch[tabId] && !twitchUrlRegexp.test(changeInfo.url)) {
-      console.log('not twitch', changeInfo.url);
+    } else if (!redirectedToTwitch[tabId] && changeInfo.url && !twitchUrlRegexp.test(changeInfo.url)) {
       lockForTab(tabId);
     }
   } else if (changeInfo.status === 'complete' && redirectedToTwitch[tabId]) {
-    console.log('changeInfo', changeInfo);
     emitStatus(tabId, isEnabled);
   }
 });
@@ -106,24 +96,3 @@ browser.tabs.onRemoved.addListener((tabId) => {
     delete redirectedToTwitch[tabId];
   }
 })
-
-// browser.runtime.onMessage.addListener((message, sender) => {
-//   console.log('sender', sender);
-//   console.log('message', message);
-//   if (sender.origin === 'https://www.twitch.tv') {
-//     const tabId = sender.tab.id;
-//     if (!twitchUrlRegexp.test(message.url)) {
-//       console.log('false');
-//       emitStatus(tabId, false);
-//     } else if (typeof isEnabled === 'boolean') {
-//       console.log('returning', isEnabled);
-//       emitStatus(sender.tab.id, isEnabled);
-//     } else {
-//       browser.storage.local.get().then((currentState) => {
-//         console.log('returning', typeof currentState.isEnabled === 'boolean' ? currentState.isEnabled : true);
-//         const isEnabled = typeof currentState.isEnabled === 'boolean' ? currentState.isEnabled : true;
-//         emitStatus(sender.tab.id, isEnabled);
-//       });
-//     }
-//   }
-// })
