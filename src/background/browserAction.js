@@ -85,6 +85,9 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     // if not twitch
     } else if (!redirectedToTwitch[tabId] && changeInfo.url && !twitchUrlRegexp.test(changeInfo.url)) {
       lockForTab(tabId);
+      // page redirect outside twitch
+    } else if (!changeInfo.url) {
+      lockForTab(tabId);
     }
   } else if (changeInfo.status === 'complete' && redirectedToTwitch[tabId]) {
     emitStatus(tabId, isEnabled);
