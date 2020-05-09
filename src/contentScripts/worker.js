@@ -57,6 +57,8 @@ function pauseFor(duration) {
     if (isLive()) {
       waitForBonusButton();
     } else {
+      // if the channel went off but the button appeared there since the last timeout
+      attemptToClick();
       waitForWhenLive();
     }
   }, duration);
