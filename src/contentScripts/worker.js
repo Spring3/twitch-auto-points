@@ -1,6 +1,6 @@
-// 14 minutes 58 seconds in ms
-const ALMOST_FIFTEEN_MINUTES_MS = 15 * 60 * 1000 - 2000;
-const FIVE_SECONDS = 5 * 1000;
+// 14 minutes 57 seconds in ms
+const ALMOST_FIFTEEN_MINUTES_MS = 15 * 60 * 1000 - 3000;
+const THREE_SECONDS = 3 * 1000;
 
 const maxClickAttempts = 5;
 let isEnabled;
@@ -23,7 +23,7 @@ const IntervalOperator = () => {
 const interval = IntervalOperator();
 
 function isLive() {
-  return !!document.getElementsByClassName('live-indicator')[0];
+  return !!document.getElementsByClassName('live-indicator-container')[0];
 }
 
 function attemptToClick() {
@@ -46,7 +46,7 @@ function waitForBonusButton() {
     clickAttempts ++;
     
     if (!clicked && clickAttempts > maxClickAttempts) {
-      pauseFor(FIVE_SECONDS);
+      pauseFor(THREE_SECONDS);
     }
   }, 1000);
 }
@@ -72,7 +72,7 @@ function waitForWhenLive() {
       interval.clear();
       waitForBonusButton();
     }
-  }, FIVE_SECONDS);
+  }, THREE_SECONDS);
 }
 
 
