@@ -5,7 +5,7 @@ A tiny little browser extension to automatically gather channel points for you!
 * Works in multiple tabs and windows at the same time.
 * Optimized for performance
 * Only works on twitch websites and gets automatically disabled on other websites
-* No data collection watsoever
+* No data collection whatsoever
 
 ![twitch_icon](https://user-images.githubusercontent.com/4171202/77271211-61414c00-6cae-11ea-9b47-60ced4134735.gif)
 
