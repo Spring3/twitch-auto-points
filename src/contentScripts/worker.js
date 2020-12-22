@@ -1,6 +1,6 @@
 // 14 minutes 57 seconds in ms
-const ALMOST_FIFTEEN_MINUTES_MS = 15 * 60 * 1000 - 3000;
 const THREE_SECONDS = 3 * 1000;
+const ALMOST_FIFTEEN_MINUTES_MS = 15 * 60 * 1000 - THREE_SECONDS;
 
 const maxClickAttempts = 5;
 let isEnabled;
@@ -23,7 +23,7 @@ const IntervalOperator = () => {
 const interval = IntervalOperator();
 
 function isLive() {
-  return !!document.getElementsByClassName('live-indicator-container')[0];
+  return Boolean(document.getElementsByClassName('live-indicator-container')[0] || document.getElementsByClassName('tw-channel-status-text-indicator')[0]);
 }
 
 function attemptToClick() {

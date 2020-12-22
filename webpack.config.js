@@ -24,21 +24,23 @@ module.exports = {
     ]
   },
   plugins: [
-    new CopyWebpackPlugin([
-      {
-        context: '../',
-        from: 'src/manifest.json'
-      },
-      {
-        context: '../',
-        from: 'src/icons',
-        to: 'icons/'
-      },
-      {
-        context: '../',
-        flatten: true,
-        from: 'node_modules/webextension-polyfill/dist/browser-polyfill.min.js'
-      }
-    ])
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          context: '../',
+          from: 'src/manifest.json'
+        },
+        {
+          context: '../',
+          from: 'src/icons',
+          to: 'icons/'
+        },
+        {
+          context: '../',
+          to: '[name].[ext]',
+          from: 'node_modules/webextension-polyfill/dist/browser-polyfill.min.js'
+        }
+      ]
+    })
   ]
 }
