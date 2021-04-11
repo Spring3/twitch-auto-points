@@ -4,12 +4,12 @@
   "description": "Automatic twitch bonus point collection",
   "main": "index.js",
   "scripts": {
-    "start": "npm run firefox",
+    "start": "yarn run firefox",
     "build": "webpack",
     "firefox": "web-ext run",
     "chrome": "web-ext run -t chromium",
     "lint": "web-ext lint --source-dir dist",
-    "package": "npm run build && web-ext build"
+    "package": "yarn run build && web-ext build"
   },
   "repository": {
     "type": "git",
@@ -23,10 +23,10 @@
   },
   "homepage": "https://github.com/Spring3/twitch-auto-points#readme",
   "devDependencies": {
-    "copy-webpack-plugin": "^7.0.0",
-    "web-ext": "^5.4.1",
+    "copy-webpack-plugin": "^8.1.1",
+    "web-ext": "^6.0.0",
     "webextension-polyfill": "^0.7.0",
-    "webpack": "^5.11.0",
-    "webpack-cli": "^4.2.0"
+    "webpack": "^5.31.2",
+    "webpack-cli": "^4.6.0"
   }
 }
