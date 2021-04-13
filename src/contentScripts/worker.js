@@ -1,6 +1,9 @@
-// 14 minutes 57 seconds in ms
+const browser = require('webextension-polyfill');
+
+const TEN_SECONDS = 10 * 1000;
 const THREE_SECONDS = 3 * 1000;
-const ALMOST_FIFTEEN_MINUTES_MS = 15 * 60 * 1000 - THREE_SECONDS;
+// 14 minutes 50 seconds in ms
+const ALMOST_FIFTEEN_MINUTES_MS = 15 * 60 * 1000 - TEN_SECONDS;
 
 const maxClickAttempts = 5;
 let isEnabled;
@@ -23,7 +26,11 @@ const IntervalOperator = () => {
 const interval = IntervalOperator();
 
 function isLive() {
-  return Boolean(document.getElementsByClassName('live-indicator-container')[0] || document.getElementsByClassName('tw-channel-status-text-indicator')[0]);
+  return Boolean(
+    document.getElementsByClassName('live-indicator-container')[0]
+    || document.getElementsByClassName('tw-channel-status-text-indicator')[0]
+    || document.querySelector('[status="tw-channel-status-indicator--live"]')
+  );
 }
 
 function attemptToClick() {
@@ -35,11 +42,37 @@ function attemptToClick() {
   return false;
 }
 
+function tryToGetReceivedPoints() {
+  const maxAttempts = 10;
+  let attempts = 0;
+  const pointsInterval = setInterval(() => {
+    if (attempts === maxAttempts) {
+      clearInterval(pointsInterval);
+      console.error('Failed to find the amount of gathered points');
+      return;
+    }
+
+    attempts += 1;
+    const bonusAmount = document.querySelector('.community-points-summary__points-add-text')?.textContent;
+    if (bonusAmount) {
+      // slice to remove + at the beginning
+      const bonusAmountInt = parseInt(bonusAmount.slice(1), 10);
+      browser.runtime.sendMessage({
+        type: 'add_points',
+        bonus: bonusAmountInt
+      });
+
+      clearInterval(pointsInterval);
+    }
+  }, 500);
+}
+
 function waitForBonusButton() {
   let clickAttempts = 0;
   interval.set(() => {
     const clicked = attemptToClick();
     if (clicked) {
+      tryToGetReceivedPoints();
       pauseFor(ALMOST_FIFTEEN_MINUTES_MS);
     }
     
@@ -91,12 +124,14 @@ function initialize() {
 
 const onMessage = (message, sender) => {
   if (sender.id === browser.runtime.id) {
-    isEnabled = message.isEnabled;
-    if (isEnabled) {
-      initialize();
-    } else {
-      interval.clear();
-      clearTimeout(timeout);
+    if (typeof message.isEnabled !== 'undefined') {
+      isEnabled = message.isEnabled;
+      if (isEnabled) {
+        initialize();
+      } else {
+        interval.clear();
+        clearTimeout(timeout);
+      }
     }
   }
 }

@@ -13,7 +13,6 @@
   "content_security_policy": "default-src 'self'",
   "background": {
     "scripts": [
-      "browser-polyfill.min.js",
       "background/browserAction.js"
     ],
     "persistent": false
@@ -31,7 +30,6 @@
   },
   "content_scripts": [{
     "js": [
-      "browser-polyfill.min.js",
       "contentScripts/worker.js"
     ],
     "matches": ["https://www.twitch.tv/*"],
