@@ -34,12 +34,7 @@ module.exports = {
           context: '../',
           from: 'src/icons',
           to: 'icons/'
-        },
-        // {
-        //   context: '../',
-        //   to: '[name].[ext]',
-        //   from: 'node_modules/webextension-polyfill/dist/browser-polyfill.min.js'
-        // }
+        }
       ]
     })
   ]
