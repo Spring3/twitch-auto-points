@@ -21,19 +21,19 @@ const iconsDisabled = {
 }
 
 const twitchUrlRegexp = /^https:\/\/www.twitch.tv\/*/;
-const TEN_MINUTES_MS = 10 * 60 * 1000;
+const TEN_SECONDS_MS = 10 * 1000;
 
 const throttledSetPoints = (setChannelPointsFn) => {
   const calls = {};
   return async (channelId, points) => {
     if (!calls[channelId]) {
-      calls[channelId] = Date.now() - TEN_MINUTES_MS - 1;
+      calls[channelId] = Date.now() - TEN_SECONDS_MS - 1;
     }
 
     const now = Date.now();
     const lastTime = calls[channelId];
 
-    if (now - lastTime >= TEN_MINUTES_MS) {
+    if (now - lastTime >= TEN_SECONDS_MS) {
       calls[channelId] = now;
       return setChannelPointsFn(channelId, points);
     }
@@ -82,7 +82,7 @@ const Extension = () => {
   };
 
   const updateBadgeForChannel = async ({ channelId, tabId }) => {
-    const points = state.channelPoints[channelId] || 0;
+    const points = getChannelPoints(channelId);
     if (tabId) {
       browser.browserAction.setBadgeText({
         text: String(points),
@@ -131,6 +131,7 @@ const Extension = () => {
     setEnabled: async (value) => {
       await browser.storage.local.set({ isEnabled: value });
       await updateTab({ isEnabled: value });
+      updateExtensionIcon(value);
       state.isEnabled = value;
     }
   }
@@ -184,9 +185,8 @@ browser.tabs.onRemoved.addListener((tabId) => {
 const onContentScriptMessage = async (message, sender) => {
   if (sender.id === browser.runtime.id) {
     if (message.type === 'add_points') {
-      const currentState = await browser.storage.local.get();
       const channelId = new URL(sender.url).pathname.split('/').pop();
-      const pointsCollectedForChannel = currentState[channelId] || 0;
+      const pointsCollectedForChannel = extension.getChannelPoints(channelId);
       const updatedAmount = pointsCollectedForChannel + message.bonus;
       extension.setChannelPoints(channelId, updatedAmount);
     }

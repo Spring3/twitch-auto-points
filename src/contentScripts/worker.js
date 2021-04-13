@@ -113,7 +113,10 @@ function initialize() {
   clearTimeout(timeout);
 
   // initial check for the button
-  attemptToClick();
+  const clicked = attemptToClick();
+  if (clicked) {
+    tryToGetReceivedPoints();
+  }
 
   if (isLive()) {
     waitForBonusButton();
