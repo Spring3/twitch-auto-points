@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "author": "Daniyil Vasylenko",
   "name": "Twitch Auto Points",
-  "version": "1.1.4",
+  "version": "1.2.1",
   "homepage_url": "https://github.com/Spring3/twitch-auto-points",
   "description": "Automatic twitch channel points collection",
   "permissions": [
