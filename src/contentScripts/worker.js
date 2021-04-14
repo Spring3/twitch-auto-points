@@ -57,9 +57,11 @@ function tryToGetReceivedPoints() {
     if (bonusAmount) {
       // slice to remove + at the beginning
       const bonusAmountInt = parseInt(bonusAmount.slice(1), 10);
+      const channelId = document.querySelector('.tw-halo')?.getAttribute('href').split('/').pop();
       browser.runtime.sendMessage({
         type: 'add_points',
-        bonus: bonusAmountInt
+        bonus: bonusAmountInt,
+        channelId
       });
 
       clearInterval(pointsInterval);
