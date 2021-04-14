@@ -185,7 +185,7 @@ browser.tabs.onRemoved.addListener((tabId) => {
 const onContentScriptMessage = async (message, sender) => {
   if (sender.id === browser.runtime.id) {
     if (message.type === 'add_points') {
-      const channelId = new URL(sender.url).pathname.split('/').pop();
+      const channelId = message.channelId;
       const pointsCollectedForChannel = extension.getChannelPoints(channelId);
       const updatedAmount = pointsCollectedForChannel + message.bonus;
       extension.setChannelPoints(channelId, updatedAmount);
