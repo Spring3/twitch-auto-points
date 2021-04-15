@@ -40,6 +40,12 @@ const throttledSetPoints = (setChannelPointsFn) => {
   }
 }
 
+const toBadgeText = (number) => {
+  if (number < 1e3) return String(number);
+  if (number >= 1e3 && number < 1e6) return +(number / 1e3).toFixed(1) + "K";
+  if (number >= 1e6 && number < 1e9) return +(number / 1e6).toFixed(1) + "M";
+}
+
 const Extension = () => {
   const state = {
     isEnabled: true,
@@ -85,14 +91,14 @@ const Extension = () => {
     const points = getChannelPoints(channelId);
     if (tabId) {
       browser.browserAction.setBadgeText({
-        text: String(points),
+        text: toBadgeText(points),
         tabId
       });
     } else {
       const tabs = await browser.tabs.query({ url: `https://www.twitch.tv/${channelId}` });
       for (const tab of tabs) {
         browser.browserAction.setBadgeText({
-          text: String(points),
+          text: toBadgeText(points),
           tabId: tab.id
         });
       }
@@ -194,5 +200,5 @@ const onContentScriptMessage = async (message, sender) => {
 }
 
 browser.runtime.onMessage.addListener(onContentScriptMessage);
-// TODO: round the number by adding K or M to the number when > 1000
 // TODO: add color themes based on the amount of points collected
+// TODO: sync info between devices
