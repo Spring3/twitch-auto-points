@@ -2,6 +2,7 @@
 
 A tiny little browser extension to automatically gather channel points for you!
 
+* The extension icon shows the amount of points it collected for the channel you opened in your tab
 * Works in multiple tabs and windows at the same time.
 * Optimized for performance
 * Only works on twitch websites and gets automatically disabled on other websites
