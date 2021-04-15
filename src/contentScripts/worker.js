@@ -1,9 +1,9 @@
 const browser = require('webextension-polyfill');
 
-const TEN_SECONDS = 10 * 1000;
-const THREE_SECONDS = 3 * 1000;
-// 14 minutes 50 seconds in ms
-const ALMOST_FIFTEEN_MINUTES_MS = 15 * 60 * 1000 - TEN_SECONDS;
+const THIRTY_SECONDS_MS = 30 * 1000;
+const THREE_SECONDS_MS = 3 * 1000;
+// 14 minutes 30 seconds in ms
+const ALMOST_FIFTEEN_MINUTES_MS = 15 * 60 * 1000 - THIRTY_SECONDS_MS;
 
 const maxClickAttempts = 5;
 let isEnabled;
@@ -43,7 +43,7 @@ function attemptToClick() {
 }
 
 function tryToGetReceivedPoints() {
-  const maxAttempts = 10;
+  const maxAttempts = 20;
   let attempts = 0;
   const pointsInterval = setInterval(() => {
     if (attempts === maxAttempts) {
@@ -81,7 +81,7 @@ function waitForBonusButton() {
     clickAttempts ++;
     
     if (!clicked && clickAttempts > maxClickAttempts) {
-      pauseFor(THREE_SECONDS);
+      pauseFor(THREE_SECONDS_MS);
     }
   }, 1000);
 }
@@ -107,7 +107,7 @@ function waitForWhenLive() {
       interval.clear();
       waitForBonusButton();
     }
-  }, THREE_SECONDS);
+  }, THREE_SECONDS_MS);
 }
 
 
