@@ -179,6 +179,7 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       tabId: tab.id
     });
     await extension.updateTab({ isEnabled: extension.isEnabled(), url: tab.url }, tabId);
+    browser.tabs.sendMessage(tabId, { reset: true });
   }
 });
 
