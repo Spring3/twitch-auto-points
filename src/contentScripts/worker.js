@@ -143,8 +143,8 @@ const onMessage = (message, sender) => {
         interval.clear();
         clearTimeout(timeout);
       }
-    } else if (message.reset) {
-      interval.clear()
+    } else if (message.reset && isEnabled) {
+      interval.clear();
       initialize();
     }
   }
