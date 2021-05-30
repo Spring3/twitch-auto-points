@@ -49,6 +49,12 @@ function tryToGetReceivedPoints() {
     if (attempts === maxAttempts) {
       clearInterval(pointsInterval);
       console.error('Failed to find the amount of gathered points');
+      // sending the default amount. For subbed people that would be incorrect, but that's better than loosing track of all of them
+      browser.runtime.sendMessage({
+        type: 'add_points',
+        bonus: 50,
+        channelId
+      })
       return;
     }
 
@@ -137,8 +143,8 @@ const onMessage = (message, sender) => {
         interval.clear();
         clearTimeout(timeout);
       }
-    } else if (message.reset) {
-      interval.clear()
+    } else if (message.reset && isEnabled) {
+      interval.clear();
       initialize();
     }
   }
