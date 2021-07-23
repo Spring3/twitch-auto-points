@@ -2,13 +2,14 @@ const browser = require('webextension-polyfill');
 const { Extension } = require('./extension.js');
 const { twitchUrlRegexp } = require('./constants.js');
 
-const redirectedToTwitch = {};
 const extension = Extension(browser);
 extension.initialize();
 
 browser.browserAction.onClicked.addListener(async () => {
   await extension.setEnabled(!extension.isEnabled());
 });
+
+const redirectedToTwitch = {};
 
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === 'loading') {
