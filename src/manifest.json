@@ -9,7 +9,7 @@
   "host_permissions": ["https://*/*"],
   "browser_specific_settings": {
     "gecko": {
-      "id": "twitch-auto-points@Spring3",
+      "id": "{076d8ebb-5df6-48e0-a619-99315c395644}",
       "data_collection_permissions": {
         "required": ["browsingActivity"]
       }
