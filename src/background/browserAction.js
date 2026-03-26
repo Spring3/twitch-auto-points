@@ -53,7 +53,7 @@ const updateBadgeForChannel = async (channelId, tabId) => {
     });
   } catch (error) {
     // If the tab is gone, we just ignore the error.
-    console.log(`Tab ${tabId} closed before badge could update.`);
+    console.debug(`Tab ${tabId} closed before badge could update.`);
   }
 };
 
