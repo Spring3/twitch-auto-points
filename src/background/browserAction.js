@@ -1,205 +1,150 @@
-const browser = require('webextension-polyfill');
+import browser from "webextension-polyfill";
 
 const iconsEnabled = {
-  16: "icons/icon-color-16.png",
-  32: "icons/icon-color-32.png",
-  48: "icons/icon-color-48.png",
-  64: "icons/icon-color-64.png",
-  96: "icons/icon-color-96.png",
-  128: "icons/icon-color-128.png",
-  256: "icons/icon-color-256.png"
+  16: "/icons/icon-color-16.png",
+  32: "/icons/icon-color-32.png",
+  128: "/icons/icon-color-128.png",
 };
 
 const iconsDisabled = {
-  16: "icons/icon-16.png",
-  32: "icons/icon-32.png",
-  48: "icons/icon-48.png",
-  64: "icons/icon-64.png",
-  96: "icons/icon-96.png",
-  128: "icons/icon-128.png",
-  256: "icons/icon-256.png"
-}
+  16: "/icons/icon-16.png",
+  32: "/icons/icon-32.png",
+  128: "/icons/icon-128.png",
+};
 
-const twitchUrlRegexp = /^https:\/\/www.twitch.tv\/*/;
+const twitchUrlRegexp = /^https:\/\/www.twitch.tv\/.+/;
 const TEN_SECONDS_MS = 10 * 1000;
 
-const throttledSetPoints = (setChannelPointsFn) => {
-  const calls = {};
-  return async (channelId, points) => {
-    if (!calls[channelId]) {
-      calls[channelId] = Date.now() - TEN_SECONDS_MS - 1;
-    }
-
-    const now = Date.now();
-    const lastTime = calls[channelId];
-
-    if (now - lastTime >= TEN_SECONDS_MS) {
-      calls[channelId] = now;
-      return setChannelPointsFn(channelId, points);
-    }
-  }
-}
-
+// Helper to format badge numbers
 const toBadgeText = (number) => {
+  if (!number || number < 1) return "";
   if (number < 1e3) return String(number);
-  if (number >= 1e3 && number < 1e6) return +(number / 1e3).toFixed(1) + "K";
-  if (number >= 1e6 && number < 1e9) return +(number / 1e6).toFixed(1) + "M";
-}
+  if (number < 1e6) return +(number / 1e3).toFixed(1) + "K";
+  return +(number / 1e6).toFixed(1) + "M";
+};
 
-const Extension = () => {
-  const state = {
-    isEnabled: true,
-    channelPoints: {}
-  };
-
-  const updateExtensionIcon = (isEnabled) => {
-    const icons = isEnabled ? iconsEnabled : iconsDisabled;
-    browser.browserAction.setIcon({ path: icons });
-  }
-
-  const initialize = async () => {
-    const persistedState = await browser.storage.local.get();
-    const { isEnabled, ...channelPoints } = persistedState;
-    if (typeof isEnabled !== 'boolean') {
-      state.isEnabled = true;
-      await browser.storage.local.set({ isEnabled: true });
-    } else {
-      state.isEnabled = isEnabled;
-
-      if (!isEnabled) {
-        updateExtensionIcon(isEnabled);
-      }
-    }
-
-    state.channelPoints = {
-      ...channelPoints
-    };
-  }
-
-  const updateTab = async (update, tabId) => {
-    if (tabId) {
-      browser.tabs.sendMessage(tabId, update);
-    } else {
-      const tabs = await browser.tabs.query({ url: 'https://www.twitch.tv/*' });
-      for (const tab of tabs) {
-        browser.tabs.sendMessage(tab.id, update);
-      }
-    }
-  };
-
-  const updateBadgeForChannel = async ({ channelId, tabId }) => {
-    const points = getChannelPoints(channelId);
-    if (tabId) {
-      browser.browserAction.setBadgeText({
-        text: toBadgeText(points),
-        tabId
-      });
-    } else {
-      const tabs = await browser.tabs.query({ url: `https://www.twitch.tv/${channelId}` });
-      for (const tab of tabs) {
-        browser.browserAction.setBadgeText({
-          text: toBadgeText(points),
-          tabId: tab.id
-        });
-      }
-    }
-  }
-
-  const getChannelPoints = (channelId) => {
-    return state.channelPoints[channelId] || 0
-  };
-
-  const setChannelPoints = async (channelId, points) => {
-    await browser.storage.local.set({ [channelId]: points });
-    state.channelPoints[channelId] = points;
-    await updateBadgeForChannel({ channelId });
-  }
-  
-  const lockForTab = (tabId) => {
-    browser.browserAction.disable(tabId);
-  }
-
-  const unlockForTab = (tabId) => {
-    browser.browserAction.enable(tabId);
-  }
-
+/**
+ * MV3 State Management:
+ * Because Service Workers are ephemeral, we use a helper to
+ * always get the freshest data from storage.
+ */
+const getStorageData = async () => {
+  const data = await browser.storage.local.get();
   return {
-    initialize,
-    updateBadgeForChannel,
-    updateTab,
-    lockForTab,
-    unlockForTab,
-    getChannelPoints,
-    setChannelPoints: throttledSetPoints(setChannelPoints),
-    isEnabled: () => {
-      return state.isEnabled;
-    },
-    setEnabled: async (value) => {
-      await browser.storage.local.set({ isEnabled: value });
-      await updateTab({ isEnabled: value });
-      updateExtensionIcon(value);
-      state.isEnabled = value;
-    }
-  }
+    isEnabled: data.isEnabled !== false, // Default to true
+    channelPoints: data.channelPoints || {},
+    lastCalls: data.lastCalls || {},
+  };
+};
 
-}
+const updateExtensionIcon = (isEnabled) => {
+  const icons = isEnabled ? iconsEnabled : iconsDisabled;
+  browser.action.setIcon({ path: icons });
+};
 
-const redirectedToTwitch = {};
-const extension = Extension();
-extension.initialize();
+const updateBadgeForChannel = async (channelId, tabId) => {
+  const { channelPoints } = await getStorageData();
+  const points = channelPoints[channelId] || 0;
 
-browser.browserAction.onClicked.addListener(async () => {
-  await extension.setEnabled(!extension.isEnabled());
-});
-
-browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'loading') {
-    // if redirecting within twitch
-    if (
-      (!redirectedToTwitch[tabId] && changeInfo.url && twitchUrlRegexp.test(changeInfo.url))
-      || (!changeInfo.url && twitchUrlRegexp.test(tab.url))      
-    ) {
-      extension.unlockForTab(tabId);
-      redirectedToTwitch[tabId] = true;
-    // if was on twitch, but is redirecting outside
-    } else if (redirectedToTwitch[tabId] && changeInfo.url && !twitchUrlRegexp.test(changeInfo.url)) {
-      extension.lockForTab(tabId);
-      delete redirectedToTwitch[tabId];
-    // if not twitch
-    } else if (!redirectedToTwitch[tabId] && changeInfo.url && !twitchUrlRegexp.test(changeInfo.url)) {
-      extension.lockForTab(tabId);
-      // page redirect outside twitch
-    } else if (!changeInfo.url) {
-      extension.lockForTab(tabId);
-    }
-  } else if (changeInfo.status === 'complete' && redirectedToTwitch[tabId]) {
-    const channelId = new URL(tab.url).pathname.split('/').pop();
-    extension.updateBadgeForChannel({
-      channelId,
-      tabId: tab.id
+  try {
+    await browser.action.setBadgeText({
+      text: toBadgeText(points),
+      tabId,
     });
-    await extension.updateTab({ isEnabled: extension.isEnabled(), url: tab.url }, tabId);
-    browser.tabs.sendMessage(tabId, { reset: true });
+  } catch (error) {
+    // If the tab is gone, we just ignore the error.
+    console.debug(`Tab ${tabId} closed before badge could update.`);
+  }
+};
+
+// Main Logic Functions
+const setChannelPointsThrottled = async (channelId, bonus) => {
+  const { channelPoints, lastCalls } = await getStorageData();
+  const now = Date.now();
+  const lastTime = lastCalls[channelId] || 0;
+
+  if (now - lastTime >= TEN_SECONDS_MS) {
+    const updatedPoints = (channelPoints[channelId] || 0) + bonus;
+
+    // Update storage
+    await browser.storage.local.set({
+      channelPoints: { ...channelPoints, [channelId]: updatedPoints },
+      lastCalls: { ...lastCalls, [channelId]: now },
+    });
+
+    // Update UI across all tabs for this channel
+    const tabs = await browser.tabs.query({
+      url: `*://*.twitch.tv/${channelId}*`,
+    });
+    for (const tab of tabs) {
+      updateBadgeForChannel(channelId, tab.id);
+    }
+  }
+};
+
+// --- Listeners ---
+
+// Handle Browser Action Click (Toggle Enable/Disable)
+browser.action.onClicked.addListener(async () => {
+  const { isEnabled } = await getStorageData();
+  const newState = !isEnabled;
+
+  await browser.storage.local.set({ isEnabled: newState });
+  updateExtensionIcon(newState);
+
+  // Notify all Twitch tabs of the state change
+  const tabs = await browser.tabs.query({ url: "*://*.twitch.tv/*" });
+  for (const tab of tabs) {
+    browser.tabs.sendMessage(tab.id, { isEnabled: newState }).catch((err) => {
+      /* Ignore errors for tabs without content scripts */
+      console.warn(`Could not message tab ${tab.id}: ${err.message}`);
+    });
   }
 });
 
-browser.tabs.onRemoved.addListener((tabId) => {
-  if (redirectedToTwitch[tabId]) {
-    delete redirectedToTwitch[tabId];
+// Handle Tab Updates (Badge and Content Script Sync)
+browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  if (!tab.url || !twitchUrlRegexp.test(tab.url)) {
+    try {
+      await browser.action.disable(tabId);
+    } catch (error) {} // If the tab is gone, we just ignore the error.
+    return;
   }
-})
 
-const onContentScriptMessage = async (message, sender) => {
-  if (sender.id === browser.runtime.id) {
-    if (message.type === 'add_points') {
-      const channelId = message.channelId;
-      const pointsCollectedForChannel = extension.getChannelPoints(channelId);
-      const updatedAmount = pointsCollectedForChannel + message.bonus;
-      extension.setChannelPoints(channelId, updatedAmount);
+  try {
+    await browser.action.enable(tabId);
+
+    if (changeInfo.status === "complete") {
+      const urlParts = new URL(tab.url).pathname.split("/");
+      const channelId = urlParts[1]; // Twitch channel name is the first path segment
+
+      if (channelId) {
+        const { isEnabled } = await getStorageData();
+        await updateBadgeForChannel(channelId, tabId);
+
+        browser.tabs
+          .sendMessage(tabId, {
+            isEnabled,
+            url: tab.url,
+            reset: true,
+          })
+          .catch(() => {});
+      }
     }
+  } catch (error) {
+    console.error("Error in onUpdated:", error.message);
   }
-}
+});
 
-browser.runtime.onMessage.addListener(onContentScriptMessage);
-// TODO: add color themes based on the amount of points collected
-// TODO: sync info between devices
+// Handle Messages from Content Scripts
+browser.runtime.onMessage.addListener(async (message, sender) => {
+  if (message.type === "add_points" && message.channelId) {
+    await setChannelPointsThrottled(message.channelId, message.bonus);
+  }
+});
+
+// Initial Setup when extension installs/updates
+browser.runtime.onInstalled.addListener(async () => {
+  const { isEnabled } = await getStorageData();
+  updateExtensionIcon(isEnabled);
+});

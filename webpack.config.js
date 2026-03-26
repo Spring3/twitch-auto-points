@@ -1,7 +1,11 @@
-const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default {
   context: path.resolve(__dirname, './src'),
   mode: 'production',
   entry: {
@@ -13,12 +17,12 @@ module.exports = {
     filename: '[name].js',
   },
   resolve: {
-    extensions: ['js', 'json'],
+    extensions: ['.js', '.json'],
   },
   module: {
     rules: [
       {
-        test: '/\.html$/',
+        test: /\.html$/,
         use: 'html-loader'
       }
     ]
@@ -27,11 +31,11 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          context: '../',
+          context: path.resolve(__dirname),
           from: 'src/manifest.json'
         },
         {
-          context: '../',
+          context: path.resolve(__dirname),
           from: 'src/icons',
           to: 'icons/'
         }

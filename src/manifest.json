@@ -1,23 +1,35 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "author": "danv",
   "name": "Twitch Auto Points",
   "version": "1.2.5",
   "homepage_url": "https://github.com/Spring3/twitch-auto-points",
   "description": "Automatic twitch channel points collection",
-  "permissions": [
-    "activeTab",
-    "storage",
-    "tabs"
-  ],
-  "content_security_policy": "default-src 'self'",
-  "background": {
-    "scripts": [
-      "background/browserAction.js"
-    ],
-    "persistent": false
+  "permissions": ["activeTab", "storage", "tabs"],
+  "host_permissions": ["https://*/*"],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "twitch-auto-points@Spring3",
+      "data_collection_permissions": {
+        "required": ["browsingActivity"]
+      }
+    }
   },
-  "browser_action": {
+  "content_security_policy": {
+    "extension_pages": "default-src 'self';"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*.png"],
+      "matches": ["*://*.twitch.tv/*"]
+    }
+  ],
+  "background": {
+    "service_worker": "background/browserAction.js",
+    "type": "module",
+    "scripts": ["background/browserAction.js"]
+  },
+  "action": {
     "default_icon": {
       "16": "icons/icon-color-16.png",
       "32": "icons/icon-color-32.png",
@@ -28,14 +40,13 @@
       "256": "icons/icon-color-256.png"
     }
   },
-  "content_scripts": [{
-    "js": [
-      "contentScripts/worker.js"
-    ],
-    "matches": ["https://www.twitch.tv/*"],
-    "match_about_blank": false,
-    "run_at": "document_idle"
-  }],
+  "content_scripts": [
+    {
+      "matches": ["*://*.twitch.tv/*"],
+      "match_about_blank": false,
+      "js": ["contentScripts/worker.js"]
+    }
+  ],
   "icons": {
     "16": "icons/icon-16.png",
     "32": "icons/icon-32.png",

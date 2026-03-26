@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   verbose: true,
   sourceDir: 'dist/',
   build: {
