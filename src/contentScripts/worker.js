@@ -1,4 +1,4 @@
-const browser = require('webextension-polyfill');
+import browser from 'webextension-polyfill';
 
 const THIRTY_SECONDS_MS = 30 * 1000;
 const THREE_SECONDS_MS = 3 * 1000;
