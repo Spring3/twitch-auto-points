@@ -4,12 +4,12 @@
   "description": "Automatic twitch bonus point collection",
   "main": "index.js",
   "scripts": {
-    "start": "npx run firefox",
+    "start": "npm run firefox",
     "build": "webpack",
     "firefox": "web-ext run -t firefox-desktop --source-dir dist",
     "chrome": "web-ext run -t chromium --source-dir dist",
     "lint": "web-ext lint --source-dir dist",
-    "package": "npx run build && web-ext build"
+    "package": "npm run build && npx web-ext build"
   },
   "repository": {
     "type": "git",
