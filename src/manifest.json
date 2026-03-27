@@ -6,7 +6,7 @@
   "homepage_url": "https://github.com/Spring3/twitch-auto-points",
   "description": "Automatic twitch channel points collection",
   "permissions": ["activeTab", "storage", "tabs"],
-  "host_permissions": ["https://*/*"],
+  "host_permissions": ["https://*.twitch.tv/*"],
   "browser_specific_settings": {
     "gecko": {
       "id": "{076d8ebb-5df6-48e0-a619-99315c395644}"
