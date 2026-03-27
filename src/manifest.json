@@ -9,10 +9,7 @@
   "host_permissions": ["https://*/*"],
   "browser_specific_settings": {
     "gecko": {
-      "id": "{076d8ebb-5df6-48e0-a619-99315c395644}",
-      "data_collection_permissions": {
-        "required": []
-      }
+      "id": "{076d8ebb-5df6-48e0-a619-99315c395644}"
     }
   },
   "content_security_policy": {
