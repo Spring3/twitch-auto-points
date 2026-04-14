@@ -24,9 +24,9 @@
   "homepage": "https://github.com/Spring3/twitch-auto-points#readme",
   "devDependencies": {
     "copy-webpack-plugin": "^14.0.0",
-    "web-ext": "^10.0.0",
+    "web-ext": "^10.1.0",
     "webextension-polyfill": "^0.12.0",
-    "webpack": "^5.105.4",
+    "webpack": "^5.106.1",
     "webpack-cli": "^7.0.2"
   }
 }
